@@ -1,0 +1,167 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+#include 'totvs.ch'
+
+NAMESPACE employees
+
+Class EmployeesData From fwAdapterBaseV2
+    public method new() as Object
+    public method get()
+    public method handleEmployees() as Logical
+EndClass
+
+
+
+Method new(cVerb as Character) as Object Class EmployeesData
+    _Super:new(cVerb, .T.)
+Return Self
+
+
+
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character, ;
+  cFields as Character, cSort as Character, cMatricula as Character) Class EmployeesData
+    local aArea   as Array
+    local cWhere  as Character
+    local aFilter as Array
+
+    aFilter := {}
+
+    if .not. empty(cMatricula)
+        cWhere := "SRA.RA_FILIAL = '" + fWxFilial("SRA") + "' AND SRA.RA_MAT = '" + cMatricula + "' AND SRA.D_E_L_E_T_ = ' '"
+    else
+        cWhere := "SRA.RA_FILIAL = '" + fWxFilial("SRA") + "' AND SRA.D_E_L_E_T_ = ' '"
+    endif
+
+    aArea := fwGetArea()
+
+    addMapFields(self)
+
+    if .not. Empty(cFilter)
+        aAdd(aFilter, {"FILTER", cFilter})
+        ::setUrlFilter(aFilter)
+    EndIf
+
+    if .not. Empty(cFields)
+        ::setFields(cFields)
+    EndIf
+
+    if .not. Empty(cSort)
+        ::setOrderQuery(cSort)
+    EndIf
+
+    ::setPage(nPage)
+    ::setPageSize(nPageSize)
+    ::setQuery( getQuery('SRA') )
+    ::setWhere(cWhere)
+    ::setOrder("RA_FILIAL, RA_MAT")
+
+    If ::Execute()
+        ::fillGetResponse()
+    EndIf
+    
+    fwRestArea(aArea)
+    aSize(aArea, 0)
+
+Return NIL
+
+
+Static Function addMapFields(oSelf as Object)
+    local lFixed   := .T.
+    local lRetJson := .T.
+
+    oSelf:addMapFields("matric"   , "RA_MAT"    , lRetJson,  lFixed, { "RA_MAT"    , 'C', TamSX3('RA_MAT')[1]    , 0 })
+    oSelf:addMapFields("nome"     , "RA_NOME"   , lRetJson, !lFixed, { "RA_NOME"   , 'C', TamSX3('RA_NOME')[1]   , 0 })
+    oSelf:addMapFields("situacao" , "RA_SITFOLH", lRetJson, !lFixed, { "RA_SITFOLH", 'C', TamSX3('RA_SITFOLH')[1], 0 })
+    oSelf:addMapFields("admissao" , "RA_ADMISSA", lRetJson, !lFixed, { "RA_ADMISSA", 'D', TamSX3('RA_ADMISSA')[1], 0 })
+    oSelf:addMapFields("demissao" , "RA_DEMISSA", lRetJson, !lFixed, { "RA_DEMISSA", 'D', TamSX3('RA_DEMISSA')[1], 0 })
+Return NIL
+
+
+
+Static Function getQuery(cTable as Character) as Character
+    local cRetQuery as Character
+    cRetQuery := "SELECT #QueryFields# FROM "
+    cRetQuery += retSqlName(cTable) + space(1) + cTable + space(1)
+    cRetQuery += "WHERE #QueryWhere#"
+
+Return cRetQuery
+
+
+
+Method handleEmployees(nOper as Integer, jBody as Json, cMatric as Character) as Logical Class EmployeesData
+    local lRet          as Logical
+    local aData         as Array
+    local aErrorLog     as Array
+    local cErrorLog     as Character
+    local cKeySearch    as Character
+    private lMsErroAuto as Logical
+    private lMsHelpAuto as Logical
+    private lAutoErrNoFile as Logical
+
+    aData := {}
+    lMsHelpAuto    := .T.
+    lAutoErrNoFile := .T.
+    
+    if nOper # 3
+        cKeySearch := avKey(jBody['filial'], "RA_FILIAL")
+        cKeySearch += avKey(cMatric, "RA_MAT")
+    endif
+
+    SRA->(dbSetOrder(1))
+
+    if .not. Empty(cKeySearch)
+        If .not. SRA->(dbSeek(cKeySearch))
+            lRet := .F.
+        EndIf
+    endif
+
+    if nOper == 3
+        aAdd(aData , {"RA_FILIAL" , jBody['filial'] , Nil})
+        aAdd(aData , {"RA_MAT" 	  , jBody['matric'] , Nil})
+        aAdd(aData , {'RA_NOME'	  , jBody['nome']   , Nil})
+    else
+        aAdd(aData , {"RA_FILIAL" , SRA->RA_FILIAL  , Nil})
+        aAdd(aData , {"RA_MAT" 	  , SRA->RA_MAT     , Nil})
+        aAdd(aData , {'RA_NOME'	  , SRA->RA_NOME    , Nil})
+    endIf
+
+    aAdd(aData , {'RA_SEXO'	    , jBody['sexo']        , Nil})
+    aAdd(aData , {'RA_ESTCIVI'  , jBody['estcivi']     , Nil})
+    aAdd(aData , {'RA_NATURAL'  , jBody['natural']     , Nil})
+    aAdd(aData , {'RA_NACIONA'  , jBody['naciona']     , Nil})
+    aAdd(aData , {'RA_NASC'	    , sToD(jBody['nasc'])  , Nil})
+    aAdd(aData , {'RA_CC'		, jBody['ccusto']      , Nil})
+    aAdd(aData , {'RA_ADMISSA'	, sToD(jBody['admiss']), Nil})
+    aAdd(aData , {'RA_OPCAO'	, sToD(jBody['opcao']) , Nil})
+    aAdd(aData , {'RA_CIC'	    , jBody['cic']         , Nil})
+    aAdd(aData , {'RA_CATEFD'	, jBody['catefd']      , Nil})
+    aAdd(aData , {'RA_HRSMES'	, jBody['hrsmes']      , Nil})
+    aAdd(aData , {'RA_PROCES'	, jBody['proces']      , Nil})
+    aAdd(aData , {'RA_CODFUNC'	, jBody['codfunc']     , Nil})
+    aAdd(aData , {'RA_CATFUNC'	, jBody['catfunc']     , Nil})
+    aAdd(aData , {'RA_TIPOPGT'	, jBody['tipopgt']     , Nil})
+    aAdd(aData , {'RA_TIPOADM'	, jBody['tipoadm']     , Nil})
+    aAdd(aData , {'RA_VIEMRAI'	, jBody['viemrai']     , Nil})
+    aAdd(aData , {'RA_GRINRAI'	, jBody['grinrai']     , Nil})
+    aAdd(aData , {'RA_HOPARC'	, jBody['hoparc']      , Nil})
+    aAdd(aData , {'RA_COMPSAB'	, jBody['compsab']     , Nil})
+    aAdd(aData , {'RA_NUMCP'	, jBody['numcp']       , Nil})
+    aAdd(aData , {'RA_SERCP'	, jBody['sercp'	]      , Nil})
+    aAdd(aData , {'RA_TNOTRAB'	, jBody['tnotrab']     , Nil})
+    aAdd(aData , {'RA_REGRA'	, jBody['regra']       , Nil})
+    aAdd(aData , {'RA_ADTPOSE'	, jBody['adtpose']     , Nil})
+
+    msExecAuto({|x,y,k,w| gpea010(x,y,k,w)}, NIL, NIL, aData, nOper)
+
+    if .not. lMsErroAuto
+        qOut("Registro " + iif(nOper == 3,"incluido","alterado") + " com sucesso.")
+        lRet := .T.
+    else
+        aErrorLog := getAutoGrLog()
+        aEval(aErrorLog, {|line| cErrorLog += line})
+        qOut("Houve falha ao incluir/alterar o funcionario: " + cErrorLog)
+        lRet := .F.
+    endIf
+
+Return lRet
+

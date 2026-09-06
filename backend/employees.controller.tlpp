@@ -1,0 +1,125 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+NAMESPACE employees
+
+Class EmployeesController
+    data jResponse as Json
+    data oService as Object
+
+    public method new() as Object
+
+    @Get('/api/v1/employees')
+    public method get() as Logical
+
+    @Get('/api/v1/employees/:mat')
+    public method getByMat() as Logical
+
+    @Post('/api/v1/employees')
+    public method post() as Logical
+
+    @Put('/api/v1/employees/:mat')
+    public method put() as Logical
+
+EndClass
+
+
+Method new() as Object Class EmployeesController
+	::oService  := employeesService():new()
+	::jResponse := jsonObject():new()
+Return Self
+
+
+Method get() as Logical Class EmployeesController
+	local cFields   as Character
+	local cSort     as Character
+	local cFilter   as Character
+	local nPage     as Numeric
+	local nPageSize as Numeric
+	local lRet      as Logical
+
+	cFields   := getQueryParam('FIELDS')
+	cSort     := getQueryParam('SORT')
+	cFilter   := getQueryParam('FILTER')
+	nPage     := getQueryParam('page')
+	nPageSize := getQueryParam('pageSize')
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	oRest:setResponse(::oService:get(Val(nPage), Val(nPageSize), cFilter, cFields, cSort))
+
+    lRet := .T.
+    
+Return lRet
+
+
+Method getByMat() as Logical Class EmployeesController
+    local lRet :=.T. as Logical
+	local cMat    as Character
+	local cFields as Character
+
+	cFields := getQueryParam('FIELDS')
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+    cMat := oRest:getPathParamsRequest()['mat']
+	oRest:setResponse(::oService:get(1, 10,,cFields,,cMat))
+
+Return lRet
+
+
+
+Method post() as Logical Class EmployeesController
+    local lRet := .T. as Logical
+    local cBody as Character
+    local jBody as Json
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+    cBody := oRest:getBodyRequest()
+    jBody := jsonObject():new()
+
+    if jBody:fromJson(cBody) == Nil
+        oRest:setResponse(::oService:post(3, jBody))
+    else
+        setRestFault(400, "Json inválido")
+    endif
+
+Return lRet
+
+
+Method put() as Logical Class EmployeesController
+    local lRet :=.T. as Logical
+	local cMatr  as Character
+    local cBody as Character
+    local jBody as Json
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+    cMatr := oRest:getPathParamsRequest()['mat']
+    cBody := oRest:getBodyRequest()
+    jBody := jsonObject():new()
+
+    if jBody:fromJson(cBody) == Nil
+        oRest:setResponse(::oService:put(4, jBody, cMatr))
+    else
+		setRestFault(400, "Json inválido")
+    endif
+
+Return lRet
+
+
+Static Function getQueryParam(cParam as Character)
+    local cRetorno as Character
+
+    cRetorno := oRest:getQueryRequest():getJsonText(cParam)
+
+    if cRetorno == 'null'
+        if cParam == 'page'
+            cRetorno := '1'
+        elseif cParam == 'pageSize'
+            cRetorno := '10'
+        else
+            cRetorno := ''
+        endif
+    endif
+
+Return cRetorno

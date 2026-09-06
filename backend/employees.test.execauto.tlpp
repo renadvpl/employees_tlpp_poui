@@ -1,0 +1,58 @@
+#INCLUDE "protheus.ch"
+NAMESPACE employees.test
+
+/*/{Protheus.doc} EMPLOYEES.TEST.EXECAUTO_SRA
+  @Description..: Rotina Automatica para Cadastro de Funcionarios
+  @Type.........: funcao
+  @Author.......: Renato Silva (TOTVS)
+  @Since........: 27/07/2026
+  @Sample.......: employees.test.u_execauto_sra()
+/*/
+User Function execauto_sra()
+    local aDadosFunc    as Array
+    local nOperacao     as Integer
+    private lMsErroAuto as Logical
+    
+    aDadosFunc := {}
+    nOperacao := 3
+
+    aAdd(aDadosFunc , {"RA_FILIAL" 	, "M SP 01 "			, Nil})
+    aAdd(aDadosFunc , {"RA_MAT" 	, "001236"				, Nil})
+    aAdd(aDadosFunc , {'RA_NOME'	, 'EXECAUTO 27-07-2026'	, Nil})
+    aAdd(aDadosFunc , {'RA_SEXO'	, 'F'					, Nil})
+    aAdd(aDadosFunc , {'RA_ESTCIVI'	, 'C'					, Nil})
+    aAdd(aDadosFunc , {'RA_NATURAL'	, 'SP'					, Nil})
+    aAdd(aDadosFunc , {'RA_NACIONA'	, '10'					, Nil})
+    aAdd(aDadosFunc , {'RA_NASC'	, sToD('19731215')		, Nil})
+    aAdd(aDadosFunc , {'RA_CC'		, '000000001'			, Nil})
+    aAdd(aDadosFunc , {'RA_ADMISSA'	, sToD('20220505')		, Nil})
+    aAdd(aDadosFunc , {'RA_OPCAO'	, sToD('20220505')		, Nil})
+    aAdd(aDadosFunc , {'RA_CIC'	    , '12345678909'	    	, Nil})
+    aAdd(aDadosFunc , {'RA_CATEFD'	, '103'      			, Nil})
+    aAdd(aDadosFunc , {'RA_HRSMES'	,  220 					, Nil})
+    aAdd(aDadosFunc , {'RA_PROCES'	, '00001'				, Nil})
+    aAdd(aDadosFunc , {'RA_CODFUNC'	, '00001'				, Nil})
+    aAdd(aDadosFunc , {'RA_CATFUNC'	, 'M'					, Nil})
+    aAdd(aDadosFunc , {'RA_TIPOPGT'	, 'M'					, Nil})
+    aAdd(aDadosFunc , {'RA_TIPOADM'	, '9A'					, Nil})
+    aAdd(aDadosFunc , {'RA_VIEMRAI'	, '10'					, Nil})
+    aAdd(aDadosFunc , {'RA_GRINRAI'	, '50'					, Nil})
+    aAdd(aDadosFunc , {'RA_HOPARC'	, '1'					, Nil})
+    aAdd(aDadosFunc , {'RA_COMPSAB'	, '1'					, Nil})
+    aAdd(aDadosFunc , {'RA_NUMCP'	, '1234567'				, Nil})
+    aAdd(aDadosFunc , {'RA_SERCP'	, '150'					, Nil})
+    aAdd(aDadosFunc , {'RA_TNOTRAB'	, '001'					, Nil})
+    aAdd(aDadosFunc , {'RA_REGRA'	, '01'					, Nil})
+    aAdd(aDadosFunc , {'RA_ADTPOSE'	, '***N**'				, Nil})
+
+    msExecAuto({|x,y,k,w| gpea010(x,y,k,w)}, Nil, Nil, aDadosFunc, nOperacao)
+
+    if lMsErroAuto
+        mostraErro()
+    else
+        fwAlertSuccess("Inclusão do funcionário realizado.")
+    endif
+
+    aSize(aDadosFunc, 0)
+
+Return(.T.)

@@ -1,0 +1,64 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+#include 'totvs.ch'
+
+NAMESPACE employees
+
+
+Class EmployeesService
+    public data jResponse as Json
+    public method new()   as Object
+    public method get()   as Json
+    public method post()  as Json
+    public method put()   as Json
+EndClass
+
+Method new() as Object Class EmployeesService
+    ::jResponse := jsonObject():New()
+Return Self
+
+
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character, ;
+  cFields as Character, cOrder as Character, cMatricula as Character) as Json Class EmployeesService
+    local oData as Object
+
+    oData := employeesData():new("GET")
+    oData:get(nPage, nPageSize, cFilter, cFields, cOrder, cMatricula)
+
+    if oData:lOk
+        ::jResponse := oData:gtJsonObjResponse()
+        if !Empty(cMatricula) .And. Len(::jResponse['items']) > 0
+            ::jResponse := ::jResponse['items'][1]
+        endIf
+
+    else
+        ::jResponse := setRestFault(oData:getCode(), oData:getMessage())
+
+    endif
+    
+Return ::jResponse
+
+Method post(nOperation as Integer, jBody as Json) as Json Class EmployeesService
+    local oData as Object
+
+    oData := employeesData():new("POST")
+    ::jResponse := oData:handleEmployees(nOperation, jBody, nil)
+
+    if .not. oData:lOk
+        ::jResponse := setRestFault(oData:getCode(), oData:getMessage())
+    endif
+    
+Return ::jResponse
+
+
+Method put(nOperation as Integer, jBody as Json, cMatricula as Character) as Json Class EmployeesService
+    local oData as Object
+
+    oData := employeesData():new("PUT")
+    ::jResponse := oData:handleEmployees(nOperation, jBody, cMatricula)
+
+    if .not. oData:lOk
+        ::jResponse := setRestFault(oData:getCode(), oData:getMessage())
+    endif
+
+Return ::jResponse
