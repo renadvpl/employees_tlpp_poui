@@ -1,7 +1,10 @@
 <div class="po-wrapper">
-    <po-page-default
-      p-title="Lista de Funcionários"
-      [p-actions]="pageActions">
-      <p>employees-list works!</p>
-    </po-page-default>
+    <po-page-dynamic-search
+      p-title="Cadastro de Funcionários"
+      [p-actions]="pageActions"
+      [p-filters]="advancedSearchFields"
+      (p-quick-search)="onQuickSearch($event)"
+      (p-advanced-search)="onAdvancedSearch($event)"
+      (p-change-disclaimers)="onChangeDisclaimers($event)">
+    </po-page-dynamic-search>
 </div>
