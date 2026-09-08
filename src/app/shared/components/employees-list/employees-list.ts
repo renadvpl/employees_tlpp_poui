@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PoPageAction } from '@po-ui/ng-components';
 import { PoPageDynamicSearchFilters, PoPageDynamicSearchModule } from '@po-ui/ng-templates';
+import { AdvancedSearchFields, SearchDisclaimers } from '../../interfaces/search';
 
 @Component({
   selector: 'app-employees-list',
@@ -38,20 +39,65 @@ export class EmployeesList {
     }
   ];
 
+  filters: string = '';
 
   addEmployee() {
     alert('Cliquei no item do menu Incluir');
   }
 
   onQuickSearch(value: any) {
-    console.log('onQuickSearch', value);
+    if (value) {
+      this.filters = `ra_mat eq '${value}'`;
+    } else {
+      this.filters = '';
+    }
   }
 
-  onAdvancedSearch(value: any) {
-    console.log('onAdvancedSearch', value);
+  onAdvancedSearch(srchValues: AdvancedSearchFields) {
+    const keys = Object.keys(srchValues);
+    const values = Object.values(srchValues);
+    const filters: any[] = [];
+    for (let index = 0; index < keys.length; index++) {
+      filters.push({
+        property: keys[index],
+        value: values[index],
+        label: keys[index]
+      });
+    }
+    this.setFilters(filters);
   }
 
-  onChangeDisclaimers(value: any) {
-    console.log('onChangeDisclaimers', value);
+  onChangeDisclaimers(values: SearchDisclaimers[]): void {
+    this.setFilters(values);
+  }
+
+  setFilters(values: SearchDisclaimers[]): void {
+    this.filters = '';
+    if (values.length > 0) {
+      values.forEach((value) => {
+        switch (value.property) {
+          case 'ra_mat_ge':
+            this.filters += `ra_mat ge '${value.value}' and `;
+            break;
+          case 'ra_mat_le':
+            this.filters += `ra_mat le '${value.value}' and `;
+            break;
+          case 'ra_cpf_ge':
+            this.filters += `ra_cpf ge '${value.value}' and `;
+            break;
+          case 'ra_cpf_le':
+            this.filters += `ra_cpf le '${value.value}' and `;
+            break;
+          default:
+            break;
+        }
+      });
+    };
+      
+    if(this.filters) {
+      this.filters = this.filters.slice(0, -5);
+    }
+
+    console.log('Filters: ', this.filters);
   }
 }
