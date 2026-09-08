@@ -6,5 +6,10 @@
       (p-quick-search)="onQuickSearch($event)"
       (p-advanced-search)="onAdvancedSearch($event)"
       (p-change-disclaimers)="onChangeDisclaimers($event)">
+      @if (tableColumns.length > 0) {
+        <div><po-table
+            [p-columns]="tableColumns">
+        </po-table></div>
+      }
     </po-page-dynamic-search>
 </div>

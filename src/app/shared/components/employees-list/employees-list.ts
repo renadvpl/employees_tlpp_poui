@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
-import { PoPageAction } from '@po-ui/ng-components';
+import { Component, OnInit } from '@angular/core';
+import { PoPageAction, PoTableColumn, PoTableModule } from '@po-ui/ng-components';
 import { PoPageDynamicSearchFilters, PoPageDynamicSearchModule } from '@po-ui/ng-templates';
 import { AdvancedSearchFields, SearchDisclaimers } from '../../interfaces/search';
+import { EmployeeServ } from '../../services/employee-serv';
 
 @Component({
   selector: 'app-employees-list',
-  imports: [PoPageDynamicSearchModule],
+  imports: [PoPageDynamicSearchModule, PoTableModule],
   templateUrl: './employees-list.html',
   styleUrl: './employees-list.css',
 })
-export class EmployeesList {
+export class EmployeesList implements OnInit {
+
+  tableColumns: PoTableColumn[] = [];
+
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
   ];
@@ -41,7 +45,24 @@ export class EmployeesList {
 
   filters: string = '';
 
-  addEmployee() {
+  constructor(
+    private employeeService: EmployeeServ
+  ) { }
+
+  ngOnInit(): void {
+    this.employeeService.getEmployeeFields().subscribe({
+      next: (response) => {
+        response.SRA.fields.forEach( field => {
+          this.tableColumns.push({
+            property: field.field,
+            label: field.title
+          })
+      })},
+      error: (error) => {console.log(error)}
+    });
+  }
+
+  addEmployee(): void{
     alert('Cliquei no item do menu Incluir');
   }
 
