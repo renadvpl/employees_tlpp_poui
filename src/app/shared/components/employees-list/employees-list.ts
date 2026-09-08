@@ -53,10 +53,12 @@ export class EmployeesList implements OnInit {
     this.employeeService.getEmployeeFields().subscribe({
       next: (response) => {
         response.SRA.fields.forEach( field => {
-          this.tableColumns.push({
-            property: field.field,
-            label: field.title
-          })
+          if (field.browse) {
+            this.tableColumns.push({
+              property: field.field,
+              label: field.title
+            })
+          }
       })},
       error: (error) => {console.log(error)}
     });
