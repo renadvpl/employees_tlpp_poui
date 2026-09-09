@@ -69,11 +69,11 @@ Static Function addMapFields(oSelf as Object)
     local lFixed   := .T.
     local lRetJson := .T.
 
-    oSelf:addMapFields("matric"   , "RA_MAT"    , lRetJson,  lFixed, { "RA_MAT"    , 'C', TamSX3('RA_MAT')[1]    , 0 })
-    oSelf:addMapFields("nome"     , "RA_NOME"   , lRetJson, !lFixed, { "RA_NOME"   , 'C', TamSX3('RA_NOME')[1]   , 0 })
-    oSelf:addMapFields("situacao" , "RA_SITFOLH", lRetJson, !lFixed, { "RA_SITFOLH", 'C', TamSX3('RA_SITFOLH')[1], 0 })
-    oSelf:addMapFields("admissao" , "RA_ADMISSA", lRetJson, !lFixed, { "RA_ADMISSA", 'D', TamSX3('RA_ADMISSA')[1], 0 })
-    oSelf:addMapFields("demissao" , "RA_DEMISSA", lRetJson, !lFixed, { "RA_DEMISSA", 'D', TamSX3('RA_DEMISSA')[1], 0 })
+    oSelf:addMapFields("ra_mat"     , "RA_MAT"    , lRetJson,  lFixed, { "RA_MAT"    , 'C', TamSX3('RA_MAT')[1]    , 0 })
+    oSelf:addMapFields("ra_nome"    , "RA_NOME"   , lRetJson, !lFixed, { "RA_NOME"   , 'C', TamSX3('RA_NOME')[1]   , 0 })
+    oSelf:addMapFields("ra_sitfolh" , "RA_SITFOLH", lRetJson, !lFixed, { "RA_SITFOLH", 'C', TamSX3('RA_SITFOLH')[1], 0 })
+    oSelf:addMapFields("ra_admissa" , "RA_ADMISSA", lRetJson, !lFixed, { "RA_ADMISSA", 'D', TamSX3('RA_ADMISSA')[1], 0 })
+    oSelf:addMapFields("ra_demissa" , "RA_DEMISSA", lRetJson, !lFixed, { "RA_DEMISSA", 'D', TamSX3('RA_DEMISSA')[1], 0 })
 Return NIL
 
 
@@ -103,7 +103,7 @@ Method handleEmployees(nOper as Integer, jBody as Json, cMatric as Character) as
     lAutoErrNoFile := .T.
     
     if nOper # 3
-        cKeySearch := avKey(jBody['filial'], "RA_FILIAL")
+        cKeySearch := avKey(jBody['ra_filial'], "RA_FILIAL")
         cKeySearch += avKey(cMatric, "RA_MAT")
     endif
 
@@ -116,40 +116,40 @@ Method handleEmployees(nOper as Integer, jBody as Json, cMatric as Character) as
     endif
 
     if nOper == 3
-        aAdd(aData , {"RA_FILIAL" , jBody['filial'] , Nil})
-        aAdd(aData , {"RA_MAT" 	  , jBody['matric'] , Nil})
-        aAdd(aData , {'RA_NOME'	  , jBody['nome']   , Nil})
+        aAdd(aData , {"RA_FILIAL" , jBody['ra_filial'], Nil})
+        aAdd(aData , {"RA_MAT" 	  , jBody['ra_mat']   , Nil})
+        aAdd(aData , {'RA_NOME'	  , jBody['ra_nome']  , Nil})
     else
         aAdd(aData , {"RA_FILIAL" , SRA->RA_FILIAL  , Nil})
         aAdd(aData , {"RA_MAT" 	  , SRA->RA_MAT     , Nil})
         aAdd(aData , {'RA_NOME'	  , SRA->RA_NOME    , Nil})
     endIf
 
-    aAdd(aData , {'RA_SEXO'	    , jBody['sexo']        , Nil})
-    aAdd(aData , {'RA_ESTCIVI'  , jBody['estcivi']     , Nil})
-    aAdd(aData , {'RA_NATURAL'  , jBody['natural']     , Nil})
-    aAdd(aData , {'RA_NACIONA'  , jBody['naciona']     , Nil})
-    aAdd(aData , {'RA_NASC'	    , sToD(jBody['nasc'])  , Nil})
-    aAdd(aData , {'RA_CC'		, jBody['ccusto']      , Nil})
-    aAdd(aData , {'RA_ADMISSA'	, sToD(jBody['admiss']), Nil})
-    aAdd(aData , {'RA_OPCAO'	, sToD(jBody['opcao']) , Nil})
-    aAdd(aData , {'RA_CIC'	    , jBody['cic']         , Nil})
-    aAdd(aData , {'RA_CATEFD'	, jBody['catefd']      , Nil})
-    aAdd(aData , {'RA_HRSMES'	, jBody['hrsmes']      , Nil})
-    aAdd(aData , {'RA_PROCES'	, jBody['proces']      , Nil})
-    aAdd(aData , {'RA_CODFUNC'	, jBody['codfunc']     , Nil})
-    aAdd(aData , {'RA_CATFUNC'	, jBody['catfunc']     , Nil})
-    aAdd(aData , {'RA_TIPOPGT'	, jBody['tipopgt']     , Nil})
-    aAdd(aData , {'RA_TIPOADM'	, jBody['tipoadm']     , Nil})
-    aAdd(aData , {'RA_VIEMRAI'	, jBody['viemrai']     , Nil})
-    aAdd(aData , {'RA_GRINRAI'	, jBody['grinrai']     , Nil})
-    aAdd(aData , {'RA_HOPARC'	, jBody['hoparc']      , Nil})
-    aAdd(aData , {'RA_COMPSAB'	, jBody['compsab']     , Nil})
-    aAdd(aData , {'RA_NUMCP'	, jBody['numcp']       , Nil})
-    aAdd(aData , {'RA_SERCP'	, jBody['sercp'	]      , Nil})
-    aAdd(aData , {'RA_TNOTRAB'	, jBody['tnotrab']     , Nil})
-    aAdd(aData , {'RA_REGRA'	, jBody['regra']       , Nil})
-    aAdd(aData , {'RA_ADTPOSE'	, jBody['adtpose']     , Nil})
+    aAdd(aData , {'RA_SEXO'	    , jBody['ra_sexo']        , Nil})
+    aAdd(aData , {'RA_ESTCIVI'  , jBody['ra_estcivi']     , Nil})
+    aAdd(aData , {'RA_NATURAL'  , jBody['ra_natural']     , Nil})
+    aAdd(aData , {'RA_NACIONA'  , jBody['ra_naciona']     , Nil})
+    aAdd(aData , {'RA_NASC'	    , sToD(jBody['ra_nasc'])  , Nil})
+    aAdd(aData , {'RA_CC'		, jBody['ra_cc']          , Nil})
+    aAdd(aData , {'RA_ADMISSA'	, sToD(jBody['ra_admissa']), Nil})
+    aAdd(aData , {'RA_OPCAO'	, sToD(jBody['ra_opcao']) , Nil})
+    aAdd(aData , {'RA_CIC'	    , jBody['ra_cic']         , Nil})
+    aAdd(aData , {'RA_CATEFD'	, jBody['ra_catefd']      , Nil})
+    aAdd(aData , {'RA_HRSMES'	, jBody['ra_hrsmes']      , Nil})
+    aAdd(aData , {'RA_PROCES'	, jBody['ra_proces']      , Nil})
+    aAdd(aData , {'RA_CODFUNC'	, jBody['ra_codfunc']     , Nil})
+    aAdd(aData , {'RA_CATFUNC'	, jBody['ra_catfunc']     , Nil})
+    aAdd(aData , {'RA_TIPOPGT'	, jBody['ra_tipopgt']     , Nil})
+    aAdd(aData , {'RA_TIPOADM'	, jBody['ra_tipoadm']     , Nil})
+    aAdd(aData , {'RA_VIEMRAI'	, jBody['ra_viemrai']     , Nil})
+    aAdd(aData , {'RA_GRINRAI'	, jBody['ra_grinrai']     , Nil})
+    aAdd(aData , {'RA_HOPARC'	, jBody['ra_hoparc']      , Nil})
+    aAdd(aData , {'RA_COMPSAB'	, jBody['ra_compsab']     , Nil})
+    aAdd(aData , {'RA_NUMCP'	, jBody['ra_numcp']       , Nil})
+    aAdd(aData , {'RA_SERCP'	, jBody['ra_sercp'	]      , Nil})
+    aAdd(aData , {'RA_TNOTRAB'	, jBody['ra_tnotrab']     , Nil})
+    aAdd(aData , {'RA_REGRA'	, jBody['ra_regra']       , Nil})
+    aAdd(aData , {'RA_ADTPOSE'	, jBody['ra_adtpose']     , Nil})
 
     msExecAuto({|x,y,k,w| gpea010(x,y,k,w)}, NIL, NIL, aData, nOper)
 

@@ -8,7 +8,8 @@
       (p-change-disclaimers)="onChangeDisclaimers($event)">
       @if (tableColumns.length > 0) {
         <div><po-table
-            [p-columns]="tableColumns">
+            [p-columns]="tableColumns"
+            [p-items]="tableItems">
         </po-table></div>
       }
     </po-page-dynamic-search>

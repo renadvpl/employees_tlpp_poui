@@ -13,6 +13,7 @@ import { EmployeeServ } from '../../services/employee-serv';
 export class EmployeesList implements OnInit {
 
   tableColumns: PoTableColumn[] = [];
+  tableItems: any[] = [];
 
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
@@ -31,13 +32,13 @@ export class EmployeesList implements OnInit {
       gridColumns: 6
     },
     {
-      property: 'ra_cpf_ge',
+      property: 'ra_cic_ge',
       label: 'CPF De',
       divider: 'CPF',
       gridColumns: 6
     },
     {
-      property: 'ra_cpf_le',
+      property: 'ra_cic_le',
       label: 'CPF Até',
       gridColumns: 6
     }
@@ -55,13 +56,20 @@ export class EmployeesList implements OnInit {
         response.SRA.fields.forEach( field => {
           if (field.browse) {
             this.tableColumns.push({
-              property: field.field,
+              property: field.field.toLocaleLowerCase(),
               label: field.title
             })
           }
       })},
       error: (error) => {console.log(error)}
     });
+    this.employeeService.getEmployeeData().subscribe({
+      next: (resp) => {
+        console.log(resp);
+        this.tableItems = resp.items;
+      },
+      error: (e) => {console.log(e)}
+    })
   }
 
   addEmployee(): void{
@@ -105,11 +113,11 @@ export class EmployeesList implements OnInit {
           case 'ra_mat_le':
             this.filters += `ra_mat le '${value.value}' and `;
             break;
-          case 'ra_cpf_ge':
-            this.filters += `ra_cpf ge '${value.value}' and `;
+          case 'ra_cic_ge':
+            this.filters += `ra_cic ge '${value.value}' and `;
             break;
-          case 'ra_cpf_le':
-            this.filters += `ra_cpf le '${value.value}' and `;
+          case 'ra_cic_le':
+            this.filters += `ra_cic le '${value.value}' and `;
             break;
           default:
             break;

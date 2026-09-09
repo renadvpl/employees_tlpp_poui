@@ -23,5 +23,5 @@ export interface Field {
     required: boolean;
     type: string;
     size: number;
-    decimal: number
+    decimal: number;
 }

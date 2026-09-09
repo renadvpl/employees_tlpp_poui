@@ -19,4 +19,8 @@ export class EmployeeServ {
   getEmployeeFields(): Observable<SRAFields> {
     return this.http.get<SRAFields>(`${BASE_URL}/api/framework/v1/basicProtheusServices/fwFormstructview?alias=SRA`, this.httpOptions);
   }
+
+  getEmployeeData(): Observable<any> {
+    return this.http.get<any>(`${BASE_URL}/api/v1/employees`, this.httpOptions);
+  }
 }
