@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SRAFields } from '../interfaces/employee';
+import { Field } from '../interfaces/employee';
 
 const BASE_URL = 'http://localhost:8081/rest';
 
@@ -20,7 +21,20 @@ export class EmployeeServ {
     return this.http.get<SRAFields>(`${BASE_URL}/api/framework/v1/basicProtheusServices/fwFormstructview?alias=SRA`, this.httpOptions);
   }
 
-  getEmployeeData(): Observable<any> {
-    return this.http.get<any>(`${BASE_URL}/api/v1/employees`, this.httpOptions);
+  getEmployeeData(fields: Field[]): Observable<any> {
+    let fieldParam = "";
+
+    fields.forEach(field => {
+      if (field.browse) {
+        fieldParam += field.field.toLocaleLowerCase() + ','
+      }
+    });
+
+    if(fieldParam) {
+      fieldParam = fieldParam.slice(0, -1);
+    }
+
+    console.log(fieldParam);
+    return this.http.get<any>(`${BASE_URL}/api/v1/employees?fields=${fieldParam}`, this.httpOptions);
   }
 }

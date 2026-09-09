@@ -3,6 +3,7 @@ import { PoPageAction, PoTableColumn, PoTableModule } from '@po-ui/ng-components
 import { PoPageDynamicSearchFilters, PoPageDynamicSearchModule } from '@po-ui/ng-templates';
 import { AdvancedSearchFields, SearchDisclaimers } from '../../interfaces/search';
 import { EmployeeServ } from '../../services/employee-serv';
+import { concatMap, map } from 'rxjs';
 
 @Component({
   selector: 'app-employees-list',
@@ -51,30 +52,34 @@ export class EmployeesList implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.employeeService.getEmployeeFields().subscribe({
-      next: (response) => {
-        response.SRA.fields.forEach( field => {
+    this.employeeService.getEmployeeFields().pipe(
+      concatMap(struct => 
+        this.employeeService.getEmployeeData(struct.SRA.fields).pipe(
+          map(data => ({ struct, data }))
+        ))
+    ).subscribe({
+      next: ({ struct, data}) => {
+        // console.log(struct, data);
+        struct.SRA.fields.forEach( field => {
           if (field.browse) {
             this.tableColumns.push({
               property: field.field.toLocaleLowerCase(),
               label: field.title
             })
           }
-      })},
-      error: (error) => {console.log(error)}
-    });
-    this.employeeService.getEmployeeData().subscribe({
-      next: (resp) => {
-        console.log(resp);
-        this.tableItems = resp.items;
+        });
+        this.tableItems = data.items;
       },
-      error: (e) => {console.log(e)}
-    })
+      error: err => {
+        console.error("erro na requisição:", err);
+      }
+    });
   }
 
   addEmployee(): void{
     alert('Cliquei no item do menu Incluir');
   }
+
 
   onQuickSearch(value: any) {
     if (value) {
