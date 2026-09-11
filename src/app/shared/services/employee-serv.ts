@@ -21,7 +21,7 @@ export class EmployeeServ {
     return this.http.get<SRAFields>(`${BASE_URL}/api/framework/v1/basicProtheusServices/fwFormstructview?alias=SRA`, this.httpOptions);
   }
 
-  getEmployeeData(fields: Field[]): Observable<any> {
+  getEmployeeData(fields: Field[], page: number, pageSize: number): Observable<any> {
     let fieldParam = "";
 
     fields.forEach(field => {
@@ -35,6 +35,6 @@ export class EmployeeServ {
     }
 
     console.log(fieldParam);
-    return this.http.get<any>(`${BASE_URL}/api/v1/employees?fields=${fieldParam}`, this.httpOptions);
+    return this.http.get<any>(`${BASE_URL}/api/v1/employees?fields=${fieldParam}&page=${page}&pageSize=${pageSize}`, this.httpOptions);
   }
 }

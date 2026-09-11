@@ -12,9 +12,10 @@ import { concatMap, map } from 'rxjs';
   styleUrl: './employees-list.css',
 })
 export class EmployeesList implements OnInit {
-
   tableColumns: PoTableColumn[] = [];
   tableItems: any[] = [];
+  page: number = 1;
+  pageSize: number = 10;
 
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
@@ -54,7 +55,7 @@ export class EmployeesList implements OnInit {
   ngOnInit(): void {
     this.employeeService.getEmployeeFields().pipe(
       concatMap(struct => 
-        this.employeeService.getEmployeeData(struct.SRA.fields).pipe(
+        this.employeeService.getEmployeeData(struct.SRA.fields, this.page, this.pageSize).pipe(
           map(data => ({ struct, data }))
         ))
     ).subscribe({
