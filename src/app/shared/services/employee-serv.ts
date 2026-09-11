@@ -21,11 +21,11 @@ export class EmployeeServ {
     return this.http.get<SRAFields>(`${BASE_URL}/api/framework/v1/basicProtheusServices/fwFormstructview?alias=SRA`, this.httpOptions);
   }
 
-  getEmployeeData(fields: Field[], page: number, pageSize: number): Observable<any> {
+  getEmployeeData(fields: Field[], defaultTableColumns: string[], page: number, pageSize: number): Observable<any> {
     let fieldParam = "";
 
     fields.forEach(field => {
-      if (field.browse) {
+      if (defaultTableColumns.includes(field.field.toLocaleLowerCase())) {
         fieldParam += field.field.toLocaleLowerCase() + ','
       }
     });

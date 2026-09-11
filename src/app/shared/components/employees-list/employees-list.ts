@@ -17,6 +17,15 @@ export class EmployeesList implements OnInit {
   page: number = 1;
   pageSize: number = 10;
 
+  readonly defaultTableColumns: string[] = [
+    "ra_mat",
+    "ra_nome",
+    "ra_cc",
+    "ra_sitfolh",
+    "ra_admissa",
+    "ra_demissa"
+  ]
+
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
   ];
@@ -55,14 +64,14 @@ export class EmployeesList implements OnInit {
   ngOnInit(): void {
     this.employeeService.getEmployeeFields().pipe(
       concatMap(struct => 
-        this.employeeService.getEmployeeData(struct.SRA.fields, this.page, this.pageSize).pipe(
+        this.employeeService.getEmployeeData(struct.SRA.fields, this.defaultTableColumns, this.page, this.pageSize).pipe(
           map(data => ({ struct, data }))
         ))
     ).subscribe({
       next: ({ struct, data}) => {
         // console.log(struct, data);
         struct.SRA.fields.forEach( field => {
-          if (field.browse) {
+          if (this.defaultTableColumns.includes(field.field.toLocaleLowerCase())) {
             this.tableColumns.push({
               property: field.field.toLocaleLowerCase(),
               label: field.title
