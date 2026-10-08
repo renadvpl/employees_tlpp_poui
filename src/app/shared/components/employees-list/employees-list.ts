@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PoPageAction, PoTableColumn, PoTableModule } from '@po-ui/ng-components';
+import { PoPageAction, PoTableColumn, PoTableColumnLabel, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { PoPageDynamicSearchFilters, PoPageDynamicSearchModule } from '@po-ui/ng-templates';
 import { AdvancedSearchFields, SearchDisclaimers } from '../../interfaces/search';
 import { EmployeeServ } from '../../services/employee-serv';
@@ -16,6 +16,7 @@ export class EmployeesList implements OnInit {
   tableItems: any[] = [];
   page: number = 1;
   pageSize: number = 10;
+  orderkey: string = 'ra_mat';
 
   readonly defaultTableColumns: string[] = [
     "ra_mat",
@@ -62,9 +63,13 @@ export class EmployeesList implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.getEmployeesData();
+  }
+
+  getEmployeesData(): void {
     this.employeeService.getEmployeeFields().pipe(
       concatMap(struct => 
-        this.employeeService.getEmployeeData(struct.SRA.fields, this.defaultTableColumns, this.page, this.pageSize).pipe(
+        this.employeeService.getEmployeeData(struct.SRA.fields, this.defaultTableColumns, this.page, this.pageSize, this.orderkey).pipe(
           map(data => ({ struct, data }))
         ))
     ).subscribe({
@@ -74,9 +79,13 @@ export class EmployeesList implements OnInit {
           if (this.defaultTableColumns.includes(field.field.toLocaleLowerCase())) {
             this.tableColumns.push({
               property: field.field.toLocaleLowerCase(),
-              label: field.title
+              label: field.title,
+              format: field.field === "RA_ADMISSA" ? 'dd/MM/yyyy' : '',
+              type: field.field === "RA_SITFOLH" ? 'label' : 'string',
+              labels: this.getLabels()
             })
           }
+          console.log(field.field)
         });
         this.tableItems = data.items;
       },
@@ -146,4 +155,22 @@ export class EmployeesList implements OnInit {
 
     console.log('Filters: ', this.filters);
   }
+
+  getLabels( ): PoTableColumnLabel[] {
+    const labels: PoTableColumnLabel[] = [];
+  
+    labels.push(
+      { value:'' , color:'caption-tag-18', label:'Ativo'},
+      { value:'F', color:'caption-tag-22', label:'Em ferias'},
+      { value:'D', color:'caption-tag-02', label:'Demitido'}
+    )
+    return labels
+  }
+
+  onSort(sortedBy: PoTableColumnSort) {
+    this.orderkey = `${sortedBy.type === 'ascending' ? '' : '-'}${sortedBy.column?.property}`;
+    this.tableItems = [];
+    this.getEmployeesData();
+  }
+  
 }
