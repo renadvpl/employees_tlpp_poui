@@ -7,7 +7,7 @@ export const routes: Routes = [
           .then(m => m.EmployeesList)
     },
     {
-        path: ':action/:mat',
+        path: 'employees/:action/:mat',
         loadComponent: () => import('./shared/components/employees-action/employees-action')
           .then(m => m.EmployeesAction)
     }

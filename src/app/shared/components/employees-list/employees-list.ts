@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { PoPageAction, PoTableColumn, PoTableColumnLabel, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
+import { PoPageAction, PoTableAction, PoTableColumn, PoTableColumnLabel, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { PoPageDynamicSearchFilters, PoPageDynamicSearchModule } from '@po-ui/ng-templates';
 import { AdvancedSearchFields, SearchDisclaimers } from '../../interfaces/search';
 import { EmployeeServ } from '../../services/employee-serv';
 import { concatMap, map } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employees-list',
@@ -29,6 +30,20 @@ export class EmployeesList implements OnInit {
 
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
+  ];
+  readonly tableActions: PoTableAction[] = [
+    {
+      label: 'Visualizar',
+      action: this.employeesView.bind(this)
+    },
+    {
+      label: 'Alterar',
+      action: this.employeesUpdate.bind(this)
+    },
+    {
+      label: 'Excluir', type: 'danger',
+      action: this.employeesDelete.bind(this)
+    }
   ];
 
   readonly advancedSearchFields: PoPageDynamicSearchFilters[] = [
@@ -59,7 +74,8 @@ export class EmployeesList implements OnInit {
   filters: string = '';
 
   constructor(
-    private employeeService: EmployeeServ
+    private employeeService: EmployeeServ,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -85,7 +101,7 @@ export class EmployeesList implements OnInit {
               labels: this.getLabels()
             })
           }
-          console.log(field.field)
+          // console.log(field.field)
         });
         this.tableItems = data.items;
       },
@@ -96,7 +112,7 @@ export class EmployeesList implements OnInit {
   }
 
   addEmployee(): void{
-    alert('Cliquei no item do menu Incluir');
+    this.router.navigate(['','employees','new','new'])
   }
 
 
@@ -152,8 +168,6 @@ export class EmployeesList implements OnInit {
     if(this.filters) {
       this.filters = this.filters.slice(0, -5);
     }
-
-    console.log('Filters: ', this.filters);
   }
 
   getLabels( ): PoTableColumnLabel[] {
@@ -171,6 +185,32 @@ export class EmployeesList implements OnInit {
     this.orderkey = `${sortedBy.type === 'ascending' ? '' : '-'}${sortedBy.column?.property}`;
     this.tableItems = [];
     this.getEmployeesData();
+  }
+
+  employeesView(row: any): void {
+    // console.log(row)
+    const endpoint: string[] = [
+      'employees','view', row.ra_mat
+    ];
+    this.navigateToAction(endpoint);
+  }
+
+  employeesUpdate(row: any): void {
+    const endpoint: string[] = [
+      'employees','edit', row.ra_mat
+    ];
+    this.navigateToAction(endpoint);
+  }
+
+  employeesDelete(row: any): void {
+    const endpoint: string[] = [
+      'employees','delete', row.ra_mat
+    ];
+    this.navigateToAction(endpoint);
+  }
+
+  navigateToAction(endpoint: string[]): void {
+    this.router.navigate(endpoint);
   }
   
 }

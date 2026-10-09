@@ -34,7 +34,6 @@ export class EmployeeServ {
       fieldParam = fieldParam.slice(0, -1);
     }
 
-    console.log(fieldParam);
     return this.http.get<any>(`${BASE_URL}/api/v1/employees?fields=${fieldParam}&page=${page}&pageSize=${pageSize}&order=${orderkey}`, this.httpOptions);
   }
 }

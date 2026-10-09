@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { PoDialogService, PoNotificationService, PoPageAction, PoPageModule } from '@po-ui/ng-components';
 
 @Component({
@@ -16,7 +17,8 @@ export class EmployeesAction {
   
   constructor(
     private dialogService: PoDialogService,
-    private notificationService: PoNotificationService
+    private notificationService: PoNotificationService,
+    private router: Router
   ) {}
 
   saveEmployee() {
@@ -44,7 +46,7 @@ export class EmployeesAction {
   }
 
   cancelConfirm() {
-    alert('Cancelado com sucesso');
+    this.router.navigate(['']);
   }
 
 }

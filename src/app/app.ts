@@ -15,9 +15,8 @@ import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/
 })
 export class App {
   readonly menus: Array<PoMenuItem> = [
-    { label: 'Home'      , action: this.onClick.bind(this)    , link: '/' },
-    { label: 'Visualizar', action: this.onClick.bind(this)    , link: '/' },
-    { label: 'Incluir'   , action: this.addEmployee.bind(this), link: ':action/:mat' }
+    { label: 'Home'      , action: this.onClick.bind(this) , link: '/' },
+    { label: 'Incluir'   , action: this.onClick.bind(this) , link: '/employees/new/new' }
   ];
 
   private onClick() {
