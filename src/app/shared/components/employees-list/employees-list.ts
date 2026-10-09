@@ -18,15 +18,7 @@ export class EmployeesList implements OnInit {
   page: number = 1;
   pageSize: number = 10;
   orderkey: string = 'ra_mat';
-
-  readonly defaultTableColumns: string[] = [
-    "ra_mat",
-    "ra_nome",
-    "ra_cc",
-    "ra_sitfolh",
-    "ra_admissa",
-    "ra_demissa"
-  ]
+  defaultTableColumns: string[] = [];
 
   readonly pageActions: PoPageAction[] = [
     { label: 'Incluir' , action: this.addEmployee.bind(this) , icon: 'an an-plus-square'}
@@ -79,13 +71,14 @@ export class EmployeesList implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.defaultTableColumns = this.employeeService.getDefaultTableColumns();
     this.getEmployeesData();
   }
 
   getEmployeesData(): void {
     this.employeeService.getEmployeeFields().pipe(
       concatMap(struct => 
-        this.employeeService.getEmployeeData(struct.SRA.fields, this.defaultTableColumns, this.page, this.pageSize, this.orderkey).pipe(
+        this.employeeService.getEmployeeData(struct.SRA.fields, this.defaultTableColumns, this.page, this.pageSize, this.orderkey, this.filters).pipe(
           map(data => ({ struct, data }))
         ))
     ).subscribe({
